@@ -1,4 +1,4 @@
-# Documentation Audit Report
+# Documentation Audit Report 
 
 ## Overview
 This audit reviewed the documentation for the `requestWithRetry` utility against its source code implementation to identify factual discrepancies.
