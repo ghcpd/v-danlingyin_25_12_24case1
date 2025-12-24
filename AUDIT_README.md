@@ -1,69 +1,30 @@
-# Documentation Audit Report
+Audit: Documentation vs implementation for `requestWithRetry`
 
-## Overview
-This audit reviewed the documentation for the `requestWithRetry` utility against its source code implementation to identify factual discrepancies.
+What was audited
+- The README documentation for `requestWithRetry` against its implementation in `input.ts`.
 
-## What Was Audited
-- **Documentation File:** readme.md
-- **Source Code File:** input.ts
-- **Focus:** Parameter descriptions, value ranges, default values, and example code
+Errors found
+- Incorrect parameter range and default for `retryCount` in `README.md`.
+  - Documented: Range 0–10, default 1
+  - Actual (code): Range 1–5, default 3
+  - Severity: High (may cause runtime errors)
 
-## Audit Findings
-**Total Issues Found: 3** (All High Severity)
+How citations were derived
+- Exact lines were inspected in `input.ts` for both the JSDoc comments and runtime checks:
+  - Default: `const retryCount = options?.retryCount ?? 3;` (line 16)
+  - Validation: `if (retryCount < 1 || retryCount > 5) { throw new Error(...) }` (lines 18-19)
+- The original README content is preserved in `README_backup.md` for comparison.
 
-### Issue Categories
-- **Value Range Errors:** Documentation claims 0–10, code enforces 1–5
-- **Default Value Errors:** Documentation claims default is 1, code uses default 3
-- **Example Code Errors:** Example uses invalid value that causes runtime error
+How reviewers can verify
+1. Open `input.ts` and confirm default and validation logic.
+2. Open `README.md` to confirm the corrected documentation now states range 1–5 and default 3.
+3. Review `README_backup.md` to see the original, incorrect documentation.
 
-## How Citations Were Derived
+Files produced by this audit
+- `README_backup.md` — original documentation (unchanged)
+- `README.md` — corrected documentation
+- `report.json` — machine-readable audit report
+- `citations.md` — human-readable evidence
 
-### Documentation Review
-- Read readme.md Configuration table for parameter descriptions
-- Extracted exact quoted text from the documentation
-- Identified the range and default value claims
-
-### Code Review
-- Examined input.ts JSDoc comments for authoritative parameter constraints
-- Reviewed the `requestWithRetry` function implementation
-- Located runtime validation logic that enforces constraints
-- Verified default value assignment via nullish coalescing operator
-
-### Verification Method
-Each issue was verified by comparing:
-1. What documentation **claims** the parameter should accept
-2. What the **code actually validates** (enforces at runtime)
-3. Where the code **actually sets defaults**
-
-## Files Generated
-
-| File | Purpose |
-|------|---------|
-| report.json | Structured issue report with all details |
-| citations.md | Side-by-side comparison with exact code references |
-| README_backup.md | Unchanged copy of original documentation |
-| README.md | Corrected documentation matching code behavior |
-| AUDIT_README.md | This file - explanation of audit process |
-
-## How to Verify Correctness
-
-### For Each Issue:
-1. Open **input.ts** and locate the code citation (line numbers provided)
-2. Open **citations.md** and review the side-by-side comparison
-3. Verify the code validation/default matches what citations.md describes
-4. Confirm the corrected README.md now matches the code exactly
-
-### Example Verification for Issue 1:
-- Check input.ts lines 17-19: The validation enforces `retryCount` must be 1–5
-- Check citations.md: Shows documentation claimed 0–10 (incorrect)
-- Check corrected README.md: Now states 1–5 (correct)
-
-## Key Findings
-
-All three issues are **High Severity** because they create immediate, breaking problems:
-- ❌ Users trusting the documented range would write code that crashes
-- ❌ Users relying on the documented default get wrong behavior
-- ❌ Users copying the example code get immediate runtime errors
-
-## Audit Conclusion
-The original documentation contained **factual errors in three critical areas**. The corrected README.md now precisely matches the code implementation.
+Notes
+- No source code was modified; only documentation files were changed to match code behaviour.
