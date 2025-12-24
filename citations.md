@@ -1,86 +1,45 @@
-# Documentation Audit - Citation Evidence
+# Citations and Evidence
 
-## Issue 1: Incorrect Value Range
+## Issue 1 — Range & Default Mismatch (README.md vs input.ts)
 
-### Documentation Claim
-**File:** readme.md  
-**Section:** Configuration  
-**Quoted text:** "Range: **0–10**"
+Documentation statement (README.md):
 
-### Code Implementation
-**File:** input.ts  
-**Lines 6-8 (JSDoc comment):**
-```typescript
-/**
- * Number of retry attempts.
- * Must be between 1 and 5.
-```
+> "| retryCount | number | Number of retry attempts. Range: **0–10**, default is **1** |"
 
-**Lines 17-19 (Runtime validation):**
-```typescript
-if (retryCount < 1 || retryCount > 5) {
-    throw new Error("retryCount must be between 1 and 5");
-}
-```
+Documentation reference: `README.md` — Configuration table (line with retryCount entry).
 
-### Why It's Incorrect
-The documentation states the valid range is 0–10, but the code explicitly validates that `retryCount` must be between 1 and 5 (inclusive). Any value outside this range throws a runtime error. The documented range is factually wrong.
+Code implementation (input.ts):
+
+- JSDoc above `retryCount`:
+  - "Must be between 1 and 5."
+  - "Default is 3."
+  (See `input.ts`, lines 5-7)
+- Default assignment in function:
+  - `const retryCount = options?.retryCount ?? 3;` (See `input.ts`, line 16)
+- Validation (throws if out of range):
+  - `if (retryCount < 1 || retryCount > 5) { throw new Error("retryCount must be between 1 and 5"); }` (See `input.ts`, lines 18-19)
+
+Explanation:
+- The README documents a permitted range of 0–10 and a default of 1, whereas the code enforces 1–5 and uses 3 as the default. This is a factual mismatch that can lead to incorrect usage.
 
 ---
 
-## Issue 2: Incorrect Default Value
+## Issue 2 — Invalid Example (README.md vs input.ts)
 
-### Documentation Claim
-**File:** readme.md  
-**Section:** Configuration  
-**Quoted text:** "default is **1**"
+Documentation example (README.md):
 
-### Code Implementation
-**File:** input.ts  
-**Lines 7 (JSDoc comment):**
-```typescript
- * Default is 3.
-```
-
-**Line 15 (Runtime default):**
-```typescript
-const retryCount = options?.retryCount ?? 3;
-```
-
-### Why It's Incorrect
-The documentation claims the default value is 1, but the code uses the nullish coalescing operator (`??`) to set the default to 3 when `retryCount` is not provided. The JSDoc also confirms the default is 3. The documented default is wrong.
-
----
-
-## Issue 3: Invalid Example Code
-
-### Documentation Claim
-**File:** readme.md  
-**Section:** Example  
-**Quoted code:**
 ```ts
 requestWithRetry("/api/data", {
   retryCount: 0
 });
 ```
 
-### Code Behavior
-**File:** input.ts  
-**Lines 17-19:**
-```typescript
-if (retryCount < 1 || retryCount > 5) {
-    throw new Error("retryCount must be between 1 and 5");
-}
-```
+Documentation reference: `README.md` — Example section.
 
-### Why It's Incorrect
-The example demonstrates calling `requestWithRetry` with `retryCount: 0`, which violates the code's validation rule. This example would throw an error at runtime: `"retryCount must be between 1 and 5"`. The example provides invalid, non-functional code that misleads users into writing broken code.
+Code implementation (input.ts):
 
----
+- Validation that will throw for 0:
+  - `if (retryCount < 1 || retryCount > 5) { throw new Error("retryCount must be between 1 and 5"); }` (See `input.ts`, lines 18-19)
 
-## Summary
-
-All three issues are **High Severity** because they lead to incorrect API usage and runtime errors:
-- Users following the documented range (0–10) would encounter runtime failures
-- Users relying on the documented default (1) would get 3 instead
-- Users copying the example code would get an immediate runtime error
+Explanation:
+- The README example demonstrates calling `requestWithRetry` with `retryCount: 0`, but the code rejects 0 and throws. The example therefore demonstrates invalid usage and should be corrected.

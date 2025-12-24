@@ -1,4 +1,4 @@
- Prompt —Documentation & Knowledge (Incorrect Docs)
+Prompt —Documentation & Knowledge (Incorrect Docs)
 You are a senior software engineer and technical documentation auditor.
 Your task is to identify incorrect documentation, where documented parameters, value ranges, or defaults do not match the actual implementation in code.
 --------------------------------------------------------------------------------
