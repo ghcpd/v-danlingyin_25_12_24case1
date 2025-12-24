@@ -16,4 +16,3 @@ Send a request with retry support.
 requestWithRetry("/api/data", {
   retryCount: 0
 });
-```
