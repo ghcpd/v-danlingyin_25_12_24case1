@@ -1,33 +1,30 @@
-Audit: requestWithRetry documentation vs implementation
+Audit: Documentation vs implementation for `requestWithRetry`
 
 What was audited
-- Public README (`README.md`) and the implementation (`input.ts`) for the `requestWithRetry` API.
+- The README documentation for `requestWithRetry` against its implementation in `input.ts`.
 
-Summary of findings
-- 3 issues found (2 High, 1 Medium):
-  - Incorrect documented range (README said 0–10; code enforces 1–5) — High
-  - Invalid example that uses `retryCount: 0` (will throw) — High
-  - Incorrect documented default (README said default 1; implementation default is 3) — Medium
+Errors found
+- Incorrect parameter range and default for `retryCount` in `README.md`.
+  - Documented: Range 0–10, default 1
+  - Actual (code): Range 1–5, default 3
+  - Severity: High (may cause runtime errors)
 
 How citations were derived
-- Source of truth: the runtime implementation in `input.ts`.
-- Documentation extracts taken from the original README (preserved as `README_backup.md`).
-- All citations include file name and exact line numbers; reviewers can open the files and see the quoted lines.
+- Exact lines were inspected in `input.ts` for both the JSDoc comments and runtime checks:
+  - Default: `const retryCount = options?.retryCount ?? 3;` (line 16)
+  - Validation: `if (retryCount < 1 || retryCount > 5) { throw new Error(...) }` (lines 18-19)
+- The original README content is preserved in `README_backup.md` for comparison.
 
 How reviewers can verify
-1. Open `input.ts` and inspect:
-   - default expression: `const retryCount = options?.retryCount ?? 3;` (confirms default = 3)
-   - range check: `if (retryCount < 1 || retryCount > 5) { ... }` (confirms allowed range 1–5)
-2. Open `README_backup.md` to see the original (incorrect) documentation and `README.md` to see the corrected text.
-3. (Runtime) Call the function in a Node/TypeScript REPL or test: `requestWithRetry('/x', { retryCount: 0 })` — it should throw.
+1. Open `input.ts` and confirm default and validation logic.
+2. Open `README.md` to confirm the corrected documentation now states range 1–5 and default 3.
+3. Review `README_backup.md` to see the original, incorrect documentation.
 
-Files produced/modified
-- Created: `README_backup.md`, `report.json`, `citations.md`, `AUDIT_README.md`
-- Updated: `README.md` (now matches `input.ts`)
+Files produced by this audit
+- `README_backup.md` — original documentation (unchanged)
+- `README.md` — corrected documentation
+- `report.json` — machine-readable audit report
+- `citations.md` — human-readable evidence
 
-Recommended next steps
-- Review and approve the updated `README.md`.
-- Add a unit test that asserts valid bounds and documents behavior (suggested).
-
-Contact
-- If you want, I can open a PR with these doc changes and add a unit test.
+Notes
+- No source code was modified; only documentation files were changed to match code behaviour.
